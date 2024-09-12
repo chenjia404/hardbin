@@ -48,8 +48,8 @@ ipfs记事本 代码由 IPFS 提供。然后用户输入内容。发布内容时
 
 你可以按如下方式“自行托管” ipfs记事本：
 
-    git clone https://github.com/jes/ipfs记事本
-    ipfs add -r ipfs记事本/
+    git clone https://github.com/chenjia404/hardbin
+    ipfs add -r hardbin/
 
 ## 定制修改
 
