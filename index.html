@@ -175,6 +175,7 @@ $('#top-save').click(function() {
             set_status("Error: Failed to store content. Is the gateway writable?");
         } else {
             window.location =window.location.pathname+  '#' + hash +"-" + key + '-firstview';
+            location.reload()
         }
     });
 });
