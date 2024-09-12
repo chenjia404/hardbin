@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Hardbin</title>
+<title>ipfs记事本</title>
 <link rel="icon" href="img/h.png">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/hardbin.css">
@@ -10,7 +10,7 @@
 <div id="container">
 <div id="nav">
     <div id="title-div">
-        <h1>hardbin.</h1>
+        <h1>ipfs记事本.</h1>
     </div>
 
     <div id="status-div">
@@ -18,10 +18,10 @@
     </div>
 
     <div id="controls-div">
-        <button class="btn btn-default" id="about">About</button> |
-        <a class="btn btn-default" href=".">New</a>
-        <button class="btn btn-primary" id="top-save">Publish</button>
-        <button class="btn btn-primary" id="top-edit" style="display:none">Edit</button>
+        <button class="btn btn-default" id="about">关于</button> |
+        <a class="btn btn-default" href=".">新建</a>
+        <button class="btn btn-primary" id="top-save">发布</button>
+        <button class="btn btn-primary" id="top-edit" style="display:none">编辑</button>
     </div>
 
 </div>
@@ -29,7 +29,7 @@
 <div style="clear:both"></div>
 
 <div id="input-div">
-    <div id="textarea-div"><textarea autofocus rows="10" class="form-control" id="input" placeholder="Input your text here, then click Publish."></textarea></div>
+    <div id="textarea-div"><textarea autofocus rows="10" class="form-control" id="input" placeholder="在此处输入您的文本，然后单击“发布”。"></textarea></div>
 </div>
 </div>
 
@@ -38,15 +38,12 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">About</h4>
+            <h4 class="modal-title">关于</h4>
           </div>
           <div class="modal-body" id="about-body">
-            <p>Hardbin is an encrypted pastebin using IPFS. It was created by <a href="http://incoherency.co.uk/">James Stanley</a>.</p>
-            <p>Unlike other pastebins, Hardbin does not require you to trust any server. You can run a local <a href="https://ipfs.io/">IPFS</a>
-            gateway and then you can always be certain that no remote server is able to modify the code you're running. In particular, this
-            means no remote server is able to insert malicious code to exfiltrate the content of your pastes.</p>
-            <p>If you want to learn more, please see <a href="README.md">README.md</a>.</p>
-            <p>If you want to contribute to Hardbin development, please see the <a href="https://github.com/jes/hardbin/">github repo</a>.</p>
+            <p>Hardbin 是一个使用 IPFS 加密的 pastebin。它是由詹姆斯·斯坦利 (James Stanley) 创作的。</p>
+            <p>与其他 pastebin 不同，Hardbin 不需要您信任任何服务器。您可以运行本地 IPFS 网关，然后始终可以确保没有远程服务器能够修改您正在运行的代码。具体而言，这意味着没有远程服务器能够插入恶意代码来窃取您的 paste 内容。</p>
+            <p>如果你想为 Hardbin 开发做出贡献, 请看<a href="https://github.com/jes/hardbin/">github repo</a>.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -135,18 +132,19 @@ function show_pin_instructions() {
     hash = hash.replace('/ipfs/', '');
     hash = hash.replace('/', '');
     fulllocation = fulllocation.replace('-firstview', '');
-    modal("Content published", "<p>Congratulations! Your content has been published to the IPFS gateway. It is now reachable by any node on the IPFS network. Share the following URL to share the content:</p><p><a style=\"word-wrap:break-word\" href=" + fulllocation + ">" + fulllocation + "</a></p><p>The IPFS hash is <b>" + hash + "</b> and the decryption key is <b>" + decryption_key + "</b>.</p><p>Content on IPFS is not persistent and will eventually disappear from the IPFS network if it is not pinned anywhere (equivalent to \"seeding\" in bittorrent). To make the content persistent, you can either pin it on an IPFS node you control:</p><p><tt>$ ipfs pin add " + hash + "</tt></p><p>Or use a service like Pinata to pin it for you:</p><a href=\"https://pinata.cloud\" class=\"btn btn-primary\">Learn about Pinata</a>");
+    modal("已发布内容", "<p>恭喜！您的内容已发布到 IPFS 网关。现在可以通过 IPFS 网络上的任何节点访问。分享以下 URL 即可分享内容:</p><p><a style=\"word-wrap:break-word\" href=" + fulllocation + ">" + fulllocation + "</a></p><p>IPFS 哈希是 <b>" + hash + "</b> 解密密钥是<b>" + decryption_key + "</b>.</p><p>IPFS 上的内容不是持久的，如果没有固定在任何地方，最终将从 IPFS 网络中消失(equivalent to \"seeding\" in bittorrent). 为了使内容持久化，你可以将其固定在你控制的 IPFS 节点上:</p><p><tt>$ ipfs pin add " + hash + "</tt></p>");
 }
 
 function load_content() {
     if (window.location.hash && window.location.hash != '#about') {
         set_status("Loading encrypted content...");
-        key = window.location.hash;
+        cid = window.location.hash.split("-")[0].replace('#','')
+        key = window.location.hash.split("-")[1];
         key = key.replace('-firstview','');
         key = key.replace('#','');
         decryption_key = key;
         $.ajax({
-            url: "content",
+            url: "/ipfs/" + cid,
             success: function(data) {
                 // TODO: show an error if we couldn't decrypt the content?
                 var plain = decrypt(data,key);
@@ -176,7 +174,7 @@ $('#top-save').click(function() {
         if (!hash) {
             set_status("Error: Failed to store content. Is the gateway writable?");
         } else {
-            window.location = '/ipfs/' + hash + '#' + key + '-firstview';
+            window.location =window.location.pathname+  '#' + hash +"-" + key + '-firstview';
         }
     });
 });

@@ -23,30 +23,28 @@ function is_local_gateway() {
 }
 
 function write(content, cb) {
+    const blob = new Blob([content], { type: 'plain/text' });
+    const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
+    const formData = new FormData();
+    formData.append('file', blob);
+
     $.ajax({
-        url: "content",
-        type: "DELETE",
-        success: function(data, status, xhr) {
-            $.ajax({
-                url: "/ipfs/" + xhr.getResponseHeader('Ipfs-Hash') + "/content",
-                type: "PUT",
-                data: content,
-                success: function(data, status, xhr) {
-                    cb(xhr.getResponseHeader('Ipfs-Hash'));
-                },
-                timeout: function() {
-                    cb("");
-                },
-                error: function() {
-                    cb("");
-                },
-            });
-        },
-        timeout: function() {
-            cb("");
+        url: api,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.Hash) {
+                console.log(response.Hash);
+                cb(response.Hash);
+            } else {
+                console.error('上传失败');
+            }
         },
         error: function() {
-            cb("");
-        },
+            console.error('请求失败');
+        }
     });
+
 }

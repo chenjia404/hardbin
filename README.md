@@ -1,142 +1,68 @@
-# hardbin.
+# ipfs记事本.
 
-> *The world's most secure encrypted pastebin, guaranteed* *
+> *世界上最安全的加密记事本，保证* *
 
-Hardbin is an encrypted pastebin, with the decryption key passed
-in the URL fragment, and the code and data served securely with
-[IPFS](https://ipfs.io/). (IPFS is a distributed content-addressable
-storage system that is web-compatible; it's basically bittorrent for
-the web).
+ipfs记事本是一个加密的 pastebin，其解密密钥在 URL 片段中传递，代码和数据通过 IPFS 安全地提供。（IPFS 是一个与网络兼容的分布式内容寻址存储系统；它基本上是网络版的 bittorrent）。
 
-The IPFS gateway you use has the same
-capabilities as an ordinary web server (i.e. it can modify content at
-will), so you should make sure to use a gateway you trust. Running
-a local gateway is the best option. Start with the IPFS [Getting
-Started](https://docs.ipfs.io/how-to/command-line-quick-start/) guide.
+与传统的加密 pastebin（例如 ZeroBin）相比，当通过受信任的网关使用时，代码和数据都无法修改，因为内容哈希值由 IPFS 进行加密验证。这意味着服务器操作员不可能插入恶意代码来窃取明文或解密密钥。这是完美的加密 pastebin。
 
-Compared to a traditional encrypted pastebin (e.g.
-[ZeroBin](https://zerobin.net)), when used over a trusted gateway, neither
-the code nor the data can be modified as the content hashes are
-cryptographically verified by IPFS. This means there is no possibility for a
-server operator to insert malicious code to exfiltrate the plaintext or
-decryption key. It's the perfect encrypted pastebin.
+（* 这不是保证）
 
-(* this is not a guarantee)
+## 用法
 
-## Usage
+请注意，ipfs记事本 的安全优势仅在通过本地（或其他受信任）网关访问时才适用。如果您通过不受您控制的网关访问它，则安全模型会降级为与传统加密 pastebin 相同的安全模型。
 
-Note that the security benefits of hardbin only apply when accessing
-it over a local (or otherwise trusted) gateway. If you access it over
-a gateway that you do not control, then the security model degrades to
-be equivalent to that of traditional encrypted pastebins.
+github repo也应该直接链接到最新的 IPFS 哈希。
 
-The [github repo](https://github.com/jes/hardbin) should also link
-directly to the latest IPFS hash.
+一般来说，它应该可以开箱即用，或者提供有关如何使其工作的良好说明。
 
-It doesn't matter which IPFS gateway is used to access hardbin, but
-you won't be able to publish anything unless you use a writable gateway
-(i.e. ```ipfs daemon --writable```).
-But remember that
-using a public gateway means you are trusting the public gateway not to
-ship malicious code to (for example) exfiltrate the plaintext.
+### 本地网关
 
-In general it should either work out-of-the-box or give good instructions
-on how to make it work.
+您自己运行的本地网关是使用 ipfs记事本 最安全的方式。
 
-The content will need to be pinned to make sure it stays
-around for long term (the same as any content stored in
-IPFS). [Pinata](https://pinata.cloud/) is a service offering to pin
-content for a very, *very* small fee. Failing that, content will stay
-around as long as it is cached on any node (e.g. a public gateway).
+按照IPFS 入门指南进行操作。
 
-If you want to share a link to hardbin which will automatically
-load this README, append ```#about``` as the fragment.
+然后，您可以安装浏览器扩展程序（例如IPFS Companion for Chrome），以自动将 IPFS 路径重定向到您的本地网关。
 
-### Local gateway
+### 公共网关
 
-A local gateway that you run yourself is the safest way to use hardbin.
+任何公共网关都适用于查看内容，但您无法在不可写网关上发布任何内容。使用公共网关还可以确保公共网关不会插入恶意代码来窃取内容（或执行任何其他不该执行的操作）。
 
-Follow the [IPFS Getting
-Started guide](https://docs.ipfs.io/how-to/command-line-quick-start/), but make sure to run the gateway with ```ipfs daemon
---writable```, else you won't be able to publish anything.
+### 可写公共网关
 
-You can then install a browser extension such as <a
-href="https://chrome.google.com/webstore/detail/ipfs-companion/nibjojkomfdiaoajekhjakgkdhaomnch">IPFS
-Companion</a> for Chrome to automatically redirect IPFS paths to your
-local gateway.
+可写的公共网关可以很好地用于查看和发布，但您仍然相信公共网关不会插入恶意代码。
 
-### Public gateway
+js\hardbin.js 27行可以修改为你自己的接口。
 
-Any public gateway will work fine for viewing content, but you won't
-be able to publish anything on a non-writable gateway. Using a public
-gateway also trusts the public gateway not to insert malicious code to
-exfiltrate content (or do anything else it shouldn't).
+## 工作原理
 
-### Writable public gateway
+ipfs记事本 代码由 IPFS 提供。然后用户输入内容。发布内容时，使用 API 生成密钥，并通过Crypto-JScrypto.getRandomValues()使用 AES-256 在浏览器中用 javascript 加密内容 。然后将新内容推送到 IPFS 网关。
 
-A writable public gateway will work fine for viewing and publishing,
-but you're still trusting the public gateway not to insert malicious code.
+解密密钥在 URL 片段中传递，并且可以与任何人共享该 URL。
 
-## How it works
+只要 IPFS 网关没有受到损害，并且用户首先访问已知良好的哈希，那么任何人都不可能修改代码或数据，因为这样做会改变 IPFS 哈希。
 
-The hardbin code is served out of IPFS. The user then inputs
-the content. When the content is published, a key is generated
-using the ```crypto.getRandomValues()``` API and the content
-is encrypted in javascript in the browser using AES-256 via
-[Crypto-JS](https://github.com/brix/crypto-js). The new content is then
-pushed to the IPFS gateway.
+由于没有人可以修改代码，也没有人可以查看密钥（除非您向他们展示），因此没有密钥的任何人都无法读取明文或发送恶意查看器来窃取明文（或密钥）。
 
-The decryption key is passed in the URL fragment, and the URL can be
-shared with anybody.
+## 自托管
 
-As long as the IPFS gateway is not compromised, and the user visits a
-known-good hash in the first place, there is no possibility for anybody
-to modify either the code or the data, because to do so would change
-the IPFS hash.
+你可以按如下方式“自行托管” ipfs记事本：
 
-Since nobody can modify the code, and nobody can view the key unless you
-show it to them, nobody without the key can either read the plaintext
-or ship a malicious viewer which would exfiltrate the plaintext (or key).
+    git clone https://github.com/jes/ipfs记事本
+    ipfs add -r ipfs记事本/
 
-## Self-hosting
+## 定制修改
 
-You can "self-host" hardbin as follows:
+如果您想使用任何自定义修改，您可以简单地进行修改，使用 在 IPFS 上发布您的新代码ipfs add，然后它就可以使用了。它与此 git repo 中的版本一样是一等公民，同样欢迎您通过公共可写网关访问它。
 
-    git clone https://github.com/jes/hardbin
-    ipfs add -r hardbin/
+当然，对于可能对其他人有用的改进，我们总是欢迎提出拉取请求。
 
-## Custom modifications
+## 安全注意事项
 
-If you want to use any custom modifications, you can simply make them,
-publish your new code on IPFS with ```ipfs add```, and then it's
-available and ready to use. It's just as much a first-class citizen as
-the version in this git repo, and you're equally welcome to access it
-via a public writable gateway.
+您仍然需要安全地共享粘贴 URL，否则第三方可以像其他任何人一样轻松地读取它。
 
-Of course, pull requests are always welcome for improvements that might
-be useful to others.
+在创建粘贴时，您需要确保使用已知良好的代码版本，因为创建看起来相同的恶意版本是微不足道的。最好的做法是第一次使用时记下哈希值，并始终使用相同的哈希值。如果您想升级到新版本的软件，则需要更新哈希值。
 
-## Security considerations
+如果您不使用本地（或其他受信任的）IPFS 网关，那么网关服务器操作员可以执行传统加密 pastebin 操作员可以执行的所有相同攻击。
 
-You still need to share the paste URL securely, otherwise a third-party
-can read it as easily as anybody else can.
-
-You need to make very sure to use a known-good version of the code when
-creating pastes, as it would be trivial to create a malicious version
-that looks identical. The best thing to do is write down the hash the
-first time you use it, and always use the same hash. If you want to
-upgrade to a new version of the software, you'll need to update your hash.
-
-If you don't use a local (or otherwise trusted) IPFS gateway, then
-the gateway server operator can perform all the same attacks that a
-traditional encrypted pastebin operator could perform.
-
-I don't recommend using hardbin for highly critical stuff as the code
-has not been thoroughly audited by anyone but me. If you want to audit
-it please contact me.
-
-## Contact me
-
-Hardbin was created by James Stanley. You can email me on
-[james@incoherency.co.uk](mailto:james@incoherency.co.uk), or read my
-blog at [incoherency.co.uk](http://incoherency.co.uk/).
+我不建议将 ipfs记事本 用于高度关键的内容，因为除了我之外，没有人彻底审核过代码。如果您想审核它，请联系我。
