@@ -20,11 +20,9 @@ ipfs记事本是一个加密的 pastebin，其解密密钥在 URL 片段中传�
 
 打开页面后，自由的输入你想分享的文本，然后点击发布，等1-5秒不等，页面自动跳转，打开一个新窗口，弹窗提示你分享链接。
 
-### 可写公共网关
+支持自定义api、网关、密码，支持使用中文密码。
 
-可写的公共网关可以很好地用于查看和发布，但您仍然相信公共网关不会插入恶意代码。
-
-js\hardbin.js 27行可以修改为你自己的接口。
+可以分享一个不带密码的链接给别人，用户自行输入密码。
 
 # 部署指南
 
@@ -44,6 +42,8 @@ js\hardbin.js 27行可以修改为你自己的接口。
 
 当然，对于可能对其他人有用的改进，我们总是欢迎提出拉取请求。
 
+js\hardbin.js 27行可以修改为你自己的接口。
+
 ## 安全注意事项
 
 您仍然需要安全地共享粘贴 URL，否则第三方可以像其他任何人一样轻松地读取它。
@@ -56,4 +56,6 @@ js\hardbin.js 27行可以修改为你自己的接口。
 
 ## 体验一下
 
-https://ipfs.blockframe.io/ipfs/QmR3221zsmtJ68pBZ2JgKcHbQfLjAvPFoouiciNE9SQXqj/
+https://ipfs.blockframe.io/ipfs/QmT6CKpPLCqcvSAfAR9pXzLawTYCEDuASCyFZmrQaZNdRe/
+
+https://eth.sucks/ipfs/QmT6CKpPLCqcvSAfAR9pXzLawTYCEDuASCyFZmrQaZNdRe/
