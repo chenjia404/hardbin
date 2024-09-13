@@ -21,6 +21,7 @@
     </div>
 
     <div id="controls-div">
+        <input id="password" type="text" name="password" placeholder="自定义密码"/>
         <input id="gateway" type="text" name="gateway" placeholder="自定义ipfs网关"/>
         <input id="api" type="text" name="api" placeholder="自定义api网关"/>
         <button class="btn btn-default" id="about">关于</button> |
@@ -138,7 +139,9 @@ function show_pin_instructions() {
     hash = hash.replace('/ipfs/', '');
     hash = hash.replace('/', '');
     fulllocation = fulllocation.replace('-firstview', '');
-    modal("已发布内容", "<p>恭喜！您的内容已发布到 IPFS 网关。现在可以通过 IPFS 网络上的任何节点访问。分享以下 URL 即可分享内容:</p><p><a style=\"word-wrap:break-word\" href=" + fulllocation + ">" + fulllocation + "</a></p><p>IPFS 哈希是 <b>" + hash + "</b> 解密密钥是<b>" + decryption_key + "</b>,你可以使用自定义的网关。</p><p>IPFS 上的内容不是持久的，如果没有固定在任何地方，最终将从 IPFS 网络中消失. 为了使内容持久化，你可以将其固定在你控制的 IPFS 节点上:</p><p><tt>$ ipfs pin add " + hash + "</tt></p>");
+    modal("已发布内容", "<p>恭喜！您的内容已发布到 IPFS 网关。现在可以通过 IPFS 网络上的任何节点访问。分享以下 URL 即可分享内容（不需要密码）:</p><p><a style=\"word-wrap:break-word\" href=" + fulllocation + ">" + fulllocation + "</a></p>"+
+    "<p>需要输入密码的链接："+ window.location.href.split("-")[0] + "</p>"+
+    "<p>IPFS 哈希是 <b>" + hash + "</b> 解密密钥是<b>" + decryption_key + "</b>,你可以使用自定义的网关。</p><p>IPFS 上的内容不是持久的，如果没有固定在任何地方，最终将从 IPFS 网络中消失. 为了使内容持久化，你可以将其固定在你控制的 IPFS 节点上:</p><p><tt>$ ipfs pin add " + hash + "</tt></p>");
 }
 
 function load_content() {
@@ -188,6 +191,10 @@ function load_content() {
 
 $('#top-save').click(function() {
     var key = generate_key();
+    if($("#password").val().length >= 6)
+    {
+        key = $("#password").val()
+    }
     write(encrypt($('#input').val(), key), function(hash) {
         if (!hash) {
             set_status("Error: Failed to store content. Is the gateway writable?");
@@ -240,6 +247,15 @@ $(document).ready(function() {
     $("#api").change(function(){
         localStorage.api = $("#api").val();
     });
+    
+    $("#password").change(function(){
+        if( $("#input").attr("readonly") == "readonly"){
+            var plain = decrypt($("#input").val(),$("#password").val());
+                    if (plain) {
+                        render(plain);}
+        }
+    });
+   
 });
 </script>
 </body>
