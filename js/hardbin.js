@@ -41,11 +41,11 @@ function write(content, cb) {
         data: formData,
         processData: false,
         contentType: false,
-        success: function(response) {
-            if (response.Hash) {
-                console.log(response.Hash);
+        success: function(res) {
+            if (res.Hash) {
+                console.log(res.Hash);
                 setTimeout(seeding(res),1)
-                setTimeout(cb(response.Hash),3000)
+                setTimeout(cb(res.Hash),3000)
             } else {
                 console.error('上传失败');
             }
