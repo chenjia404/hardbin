@@ -8,6 +8,7 @@
 <link rel="icon" href="img/h.png">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/hardbin.css">
+
 </head>
 <body>
 <div id="container">
@@ -36,6 +37,9 @@
 
 <div id="input-div">
     <div id="textarea-div"><textarea autofocus rows="10" class="form-control" id="input" placeholder="在此处输入您的文本，然后单击“发布”。"></textarea></div>
+    <div id="markdown-div">
+        <article class="markdown-body" id="markdown-body"></article>
+    </div>
 </div>
 </div>
 
@@ -118,11 +122,16 @@ function check_writability() {
 }
 
 function render(content) {
+    
+    var c = new showdown.Converter();
+    $("#markdown-body").html( c.makeHtml(content))
     $('#input').val(content);
     $('#input').prop('readonly',true);
 
     $('#top-save').hide();
     $('#top-edit').show();
+    $('#textarea-div').hide();
+    $("#markdown-div").show();
 }
 
 function unrender() {
@@ -130,6 +139,8 @@ function unrender() {
 
     $('#top-save').show();
     $('#top-edit').hide();
+    $('#textarea-div').show();
+    $("#markdown-div").hide();
 }
 
 function show_pin_instructions() {

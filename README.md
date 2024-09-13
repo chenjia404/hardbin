@@ -8,6 +8,13 @@ ipfs记事本是一个加密的 pastebin，其解密密钥在 URL 片段中传�
 
 （* 这不是保证）
 
+# 特性
+
+* 完全去中心化部署
+* 支持自定义密码，支持使用中文密码
+* 支持markdown，显示图文内容
+* 支持自定义api、网关
+
 # 原理
 
 在页面把文本通过aes加密后，上传到ipfs，然后生成通过  location.hash 传值的新链接，新链接发送给朋友后，前端解析 location.hash 或者加密内容的哈希，然后去 ipfs 网络获取加密的内容，然后通过 location.hash 里面的密码解密输入。
@@ -56,6 +63,8 @@ js\hardbin.js 27行可以修改为你自己的接口。
 
 ## 体验一下
 
-https://ipfs.blockframe.io/ipfs/QmT6CKpPLCqcvSAfAR9pXzLawTYCEDuASCyFZmrQaZNdRe/
+http://ipfs.io/ipfs/QmeWNXWbeVw7u9kcekpB3v3JmezAdAKRQ1oLABUNc7dk4w
 
-https://eth.sucks/ipfs/QmT6CKpPLCqcvSAfAR9pXzLawTYCEDuASCyFZmrQaZNdRe/
+https://ipfs.blockframe.io/ipfs/QmeWNXWbeVw7u9kcekpB3v3JmezAdAKRQ1oLABUNc7dk4w/
+
+https://eth.sucks/ipfs/QmeWNXWbeVw7u9kcekpB3v3JmezAdAKRQ1oLABUNc7dk4w/
