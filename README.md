@@ -66,3 +66,7 @@ ipfs记事本 代码由 IPFS 提供。然后用户输入内容。发布内容时
 如果您不使用本地（或其他受信任的）IPFS 网关，那么网关服务器操作员可以执行传统加密 pastebin 操作员可以执行的所有相同攻击。
 
 我不建议将 ipfs记事本 用于高度关键的内容，因为除了我之外，没有人彻底审核过代码。如果您想审核它，请联系我。
+
+## 体验一下
+
+https://ipfs.blockframe.io/ipfs/QmebVuaG75SFXSU4f7Zd4i7xq1ZR6Mf9RN4HABpkhs7ZCP/
