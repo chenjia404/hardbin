@@ -31,7 +31,10 @@ function is_local_gateway() {
 
 function write(content, cb) {
     const blob = new Blob([content], { type: 'plain/text' });
-    const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
+    let api = 'https://cdn.ipfsscan.io/api/v0/add';
+    if($("#api").val().length > 10) {
+        api = $("#api").val() + '/api/v0/add';
+    }
     const formData = new FormData();
     formData.append('file', blob);
 

@@ -21,6 +21,8 @@
     </div>
 
     <div id="controls-div">
+        <input id="gateway" type="text" name="gateway" placeholder="自定义ipfs网关"/>
+        <input id="api" type="text" name="api" placeholder="自定义api网关"/>
         <button class="btn btn-default" id="about">关于</button> |
         <a class="btn btn-default" href=".">新建</a>
         <button class="btn btn-primary" id="top-save">发布</button>
@@ -135,7 +137,7 @@ function show_pin_instructions() {
     hash = hash.replace('/ipfs/', '');
     hash = hash.replace('/', '');
     fulllocation = fulllocation.replace('-firstview', '');
-    modal("已发布内容", "<p>恭喜！您的内容已发布到 IPFS 网关。现在可以通过 IPFS 网络上的任何节点访问。分享以下 URL 即可分享内容:</p><p><a style=\"word-wrap:break-word\" href=" + fulllocation + ">" + fulllocation + "</a></p><p>IPFS 哈希是 <b>" + hash + "</b> 解密密钥是<b>" + decryption_key + "</b>.</p><p>IPFS 上的内容不是持久的，如果没有固定在任何地方，最终将从 IPFS 网络中消失(equivalent to \"seeding\" in bittorrent). 为了使内容持久化，你可以将其固定在你控制的 IPFS 节点上:</p><p><tt>$ ipfs pin add " + hash + "</tt></p>");
+    modal("已发布内容", "<p>恭喜！您的内容已发布到 IPFS 网关。现在可以通过 IPFS 网络上的任何节点访问。分享以下 URL 即可分享内容:</p><p><a style=\"word-wrap:break-word\" href=" + fulllocation + ">" + fulllocation + "</a></p><p>IPFS 哈希是 <b>" + hash + "</b> 解密密钥是<b>" + decryption_key + "</b>,你可以使用自定义的网关。</p><p>IPFS 上的内容不是持久的，如果没有固定在任何地方，最终将从 IPFS 网络中消失. 为了使内容持久化，你可以将其固定在你控制的 IPFS 节点上:</p><p><tt>$ ipfs pin add " + hash + "</tt></p>");
 }
 
 function load_content() {
@@ -146,8 +148,13 @@ function load_content() {
         key = key.replace('-firstview','');
         key = key.replace('#','');
         decryption_key = key;
+        let gateway = location.origin;
+
+        if($("#gateway").val().length > 10) {
+            gateway = $("#gateway").val();
+        }
         $.ajax({
-            url: "/ipfs/" + cid,
+            url: gateway+ "/ipfs/" + cid,
             success: function(data) {
                 // TODO: show an error if we couldn't decrypt the content?
                 var plain = decrypt(data,key);
@@ -200,6 +207,12 @@ $('#about-modal').on('hide.bs.modal', function() {
 });
 
 $(document).ready(function() {
+    if(localStorage.gateway && localStorage.gateway.length >= 10){
+        $("#gateway").val(localStorage.gateway);
+    }
+    if(localStorage.api && localStorage.api.length >= 10){
+        $("#api").val(localStorage.api);
+    }
     load_content();
 
     // load the README modal, and show it if the fragment is #about
@@ -212,6 +225,12 @@ $(document).ready(function() {
                 $('#about-modal').modal('show');
             }
         },
+    });
+    $("#gateway").change(function(){
+        localStorage.gateway = $("#gateway").val();
+    });
+    $("#api").change(function(){
+        localStorage.api = $("#api").val();
     });
 });
 </script>
