@@ -83,6 +83,7 @@
 <script src="js/hardbin.js"></script>
 <script src="js/showdown.min.js"></script>
 <script type="text/javascript">
+    const DEFAULT_API = 'https://cdn.ipfsscan.io';
 var checked_writability = false;
 
 var decryption_key = '';
@@ -144,9 +145,12 @@ function load_content() {
     if (window.location.hash && window.location.hash != '#about') {
         set_status("Loading encrypted content...");
         cid = window.location.hash.split("-")[0].replace('#','')
-        key = window.location.hash.split("-")[1];
-        key = key.replace('-firstview','');
-        key = key.replace('#','');
+        let key =""
+        if(window.location.hash.split("-").length >= 2){
+            key = window.location.hash.split("-")[1];
+            key = key.replace('-firstview','');
+            key = key.replace('#','')
+        }
         decryption_key = key;
         let gateway = location.origin;
 
@@ -156,14 +160,18 @@ function load_content() {
         $.ajax({
             url: gateway+ "/ipfs/" + cid,
             success: function(data) {
-                // TODO: show an error if we couldn't decrypt the content?
-                var plain = decrypt(data,key);
-                if (plain) {
-                    render(plain);
-                    if (window.location.hash.indexOf('firstview') != -1)
-                        show_pin_instructions();
-                    history.replaceState(undefined, undefined, '#' + decryption_key);
+                if(window.location.hash.split("-").length == 1) {
+                    render(data);
+                } else if (window.location.hash.split("-").length >= 2) {
+                    var plain = decrypt(data,key);
+                    if (plain) {
+                        render(plain);
+                        if (window.location.hash.indexOf('firstview') != -1)
+                            show_pin_instructions();
+                        history.replaceState(undefined, undefined, '#' + cid);
+                    }
                 }
+                
                 set_status("");
             },
             error: function() {
