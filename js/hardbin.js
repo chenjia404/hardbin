@@ -1,7 +1,14 @@
 /* data encryption + storage functions for hardbin
  * make sure to also load jquery + aes.js
  */
-
+var gateways = ['https://ipfs.blockframe.io','https://ipfs.crossbell.io','https://4everland.io','https://polygon.stampsdaq.com','https://ipfs.supremelegend.io','https://ipfs.decentralized-content.com','https://gateway.pinata.cloud','https://eth.sucks','https://hardbin.com','https://gw.ipfs-lens.dev','https://gateway.v2ex.pro','https://gateway.tar.tn'];
+function seeding(res){
+    for(var i0 = 0; i0 < gateways.length; i0++)
+    {
+        let img = new Image;
+        img.src =  gateways[i0]+ '/ipfs/'+res.Hash  + "?filename=" + encodeURI(res.Name);
+    }
+}
 function encrypt(data, key) {
     return CryptoJS.AES.encrypt(data, key).toString();
 }
@@ -37,7 +44,8 @@ function write(content, cb) {
         success: function(response) {
             if (response.Hash) {
                 console.log(response.Hash);
-                cb(response.Hash);
+                setTimeout(seeding(res),1)
+                setTimeout(cb(response.Hash),3000)
             } else {
                 console.error('上传失败');
             }
